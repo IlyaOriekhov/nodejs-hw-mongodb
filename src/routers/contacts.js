@@ -13,7 +13,7 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
 
-import { contactSchema } from '../validation/contacts.js';
+import { contactSchema, contactPatchSchema } from '../validation/contacts.js';
 
 const router = Router();
 
@@ -32,7 +32,7 @@ router.post(
 
 router.patch(
   '/contacts/:contactId',
-  validateBody(contactSchema),
+  validateBody(contactPatchSchema),
   isValidId,
   ctrlWrapper(patchContactController),
 );
