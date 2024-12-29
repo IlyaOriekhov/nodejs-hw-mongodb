@@ -20,6 +20,7 @@ export const contactSchema = Joi.object({
       'any.only': 'Contact type must be one of work, home, or personal',
       'any.required': 'Contact type is required',
     }),
+  userId: Joi.string(),
 });
 
 export const contactPatchSchema = Joi.object({
@@ -37,4 +38,5 @@ export const contactPatchSchema = Joi.object({
   contactType: Joi.string().valid('work', 'home', 'personal').messages({
     'any.only': 'Contact type must be one of work, home, or personal',
   }),
+  userId: Joi.string(),
 });
