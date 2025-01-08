@@ -11,14 +11,20 @@ import { env } from './utils/env.js';
 
 import cookieParser from 'cookie-parser';
 
+import { UPLOAD_DIR } from './constants/index.js';
+import { createDirIfNotExists } from './utils/createDirIfNotExists.js';
+
 const PORT = Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
 
+  createDirIfNotExists(UPLOAD_DIR);
+
   app.use(cookieParser());
   app.use(express.json());
   app.use(cors());
+  app.use('/uploads', express.static(UPLOAD_DIR));
 
   app.use(
     pino({

@@ -13,6 +13,9 @@ import { parseFilterParams } from '../utils/parseFilterParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
@@ -55,11 +58,18 @@ export const getContactsByIdController = async (req, res, next) => {
 };
 
 export const createContactsController = async (req, res) => {
+  let photoUrl = null;
+
+  if (req.file) {
+    photoUrl = await saveFileToCloudinary(req.file);
+  }
+
   const data = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     contactType: req.body.contactType,
     userId: req.user.id,
+    photo: photoUrl,
   };
 
   const contact = await createContact(data);
@@ -73,12 +83,26 @@ export const createContactsController = async (req, res) => {
 
 export const patchContactController = async (req, res, next) => {
   const { contactId } = req.params;
+  const photo = req.file;
+
+  let photoUrl;
+
+  if (photo) {
+    photoUrl = await saveFileToUploadDir(photo);
+  }
 
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
     return next(createHttpError(400, 'Invalid contact ID format'));
   }
 
-  const updatedContact = await updateContact(contactId, req.body, req.user.id);
+  const updatedContact = await updateContact(
+    contactId,
+    {
+      ...req.body,
+      photo: photoUrl,
+    },
+    req.user.id,
+  );
 
   if (!updatedContact) {
     return next(createHttpError(404, 'Contact not found'));
