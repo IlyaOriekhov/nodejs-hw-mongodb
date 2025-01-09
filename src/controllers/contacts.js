@@ -88,7 +88,7 @@ export const patchContactController = async (req, res, next) => {
   let photoUrl;
 
   if (photo) {
-    photoUrl = await saveFileToUploadDir(photo);
+    photoUrl = await saveFileToCloudinary(photo);
   }
 
   if (!mongoose.Types.ObjectId.isValid(contactId)) {
